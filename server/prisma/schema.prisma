@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Employees {
+  id                   Int                    @id @default(autoincrement())
+  firstname            String
+  lastname             String
+  department           Departments            @relation(fields: [department_id], references: [id], onDelete: Cascade)
+  department_id        Int
+  position             String
+  role                 String                 @default("user")
+  status               Boolean                @default(true)
+  username             String
+  password             String
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  Bookings             Bookings[]
+  Cancellations        Cancellations[]
+  Employee_lock_status Employee_lock_status[]
+}
+
+model Departments {
+  id        Int         @id @default(autoincrement())
+  name      String
+  createdAt DateTime    @default(now())
+  Employees Employees[]
+}
+
+model Bookings {
+  id                   Int                    @id @default(autoincrement())
+  room                 Rooms                  @relation(fields: [room_id], references: [id], onDelete: Cascade)
+  room_id              Int
+  employee             Employees              @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+  employee_id          Int
+  start_time           DateTime
+  end_time             DateTime
+  qr_code              String
+  check_in             DateTime
+  check_in_status      String                 @default("No-Show")
+  rejection_reason     String
+  createdAt            DateTime               @default(now())
+  Cancellations        Cancellations[]
+  Employee_lock_status Employee_lock_status[]
+}
+
+model Cancellations {
+  id                Int       @id @default(autoincrement())
+  booking           Bookings  @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+  booking_id        Int
+  cancelled         Employees @relation(fields: [cancelled_by], references: [id], onDelete: Cascade)
+  cancelled_by      Int
+  cancellation_time DateTime  @default(now())
+}
+
+model Employee_lock_status {
+  id          Int       @id @default(autoincrement())
+  employee    Employees @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+  employee_id Int
+  lock_count  Int
+  booking     Bookings  @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+  booking_id  Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Rooms {
+  id          Int        @id @default(autoincrement())
+  name        String
+  building    Buildings  @relation(fields: [building_id], references: [id], onDelete: Cascade)
+  building_id Int
+  floor       Int
+  capacity    Int
+  status      String     @default("available")
+  type        String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  Bookings    Bookings[]
+}
+
+model Buildings {
+  id         Int      @id @default(autoincrement())
+  name       String
+  floorCount Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  Rooms      Rooms[]
+}
