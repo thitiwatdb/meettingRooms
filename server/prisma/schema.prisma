@@ -89,7 +89,7 @@ model Rooms {
   floor       Int
   capacity    Int
   status      String     @default("available")
-  type        String
+  type        String     @default("normal")
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   Bookings    Bookings[]
