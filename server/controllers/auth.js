@@ -1,3 +1,7 @@
+const prisma = require("../config/prisma");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
 //login
 exports.login = async (req, res) => {
   try {
@@ -13,6 +17,7 @@ exports.register = async (req, res) => {
   try {
     const { username, password } = req.body;
 
+    // step 1 Validate body
     if (!username) {
       return res.status(400).json({ message: "Username is required!!!" });
     }
@@ -20,10 +25,28 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "Password is required!!!" });
     }
 
-    //check username in db already
+    //step 2 check username in db already
+    const user = await prisma.User.findFirst({
+      where: {
+        username: username,
+      },
+    });
+    if (user) {
+      return res.status(400).json({ message: "Username already exits!!!" });
+    }
 
-    console.log(username, password);
-    res.send("Hello From register");
+    //step 3 HashPassword
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    //step 4 Register
+    await prisma.User.create({
+      data: {
+        username: username,
+        password: hashPassword,
+      },
+    });
+
+    res.send("register complete");
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Server Error" });
