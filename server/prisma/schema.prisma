@@ -14,17 +14,20 @@ datasource db {
 }
 
 model User {
-  id         Int       @id @default(autoincrement())
-  username   String
-  password   String
-  role       String    @default("user")
-  status     Boolean   @default(true)
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id        Int         @id @default(autoincrement())
+  username  String
+  password  String
+  role      String      @default("user")
+  status    Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  Employees Employees[]
 }
 
 model Employees {
   id                   Int                    @id @default(autoincrement())
+  user                 User                   @relation(fields: [userID], references: [id], onDelete: Cascade)
+  userID               Int
   firstname            String
   lastname             String
   department           Departments            @relation(fields: [departmentID], references: [id], onDelete: Cascade)
