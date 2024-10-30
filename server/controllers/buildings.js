@@ -40,3 +40,23 @@ exports.remove = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+exports.update = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, floorCount } = req.body;
+    const buildings = await prisma.buildings.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        name: name,
+        floorCount: floorCount,
+      },
+    });
+    res.send(buildings);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
