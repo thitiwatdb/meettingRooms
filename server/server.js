@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const morgan = require("morgan");
+const morgan = require("morgan"); //for read status HTTP
 const { readdirSync } = require("fs"); //for read file
 const cors = require("cors"); //for link client
 
