@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const { listUsers } = require("../controllers/user");
 
-router.get("/users");
+router.get("/users", listUsers);
 router.post("/change-status");
 router.post("/change-role");
 
